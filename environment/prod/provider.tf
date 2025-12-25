@@ -10,9 +10,9 @@ terraform {
 
    backend "azurerm" {
    
-   container_name = "dec25container"
-   storage_account_name = "dec25strorageacct"
-   key = "terra.tfstate"
+   container_name = "container-zia-123"
+   storage_account_name = "storagezia123"
+   key = "terraform.tfstate"
 
 }
 
