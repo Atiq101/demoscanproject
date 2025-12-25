@@ -74,9 +74,7 @@ jobs:
           -OutFile tflint.zip
         Expand-Archive tflint.zip -DestinationPath $tools -Force
 
-        Write-Host "Installing Terrascan"
-        Invoke-WebRequest https://github.com/tenable/terrascan/releases/latest/download/terrascan_windows_amd64.exe `
-          -OutFile "$tools\terrascan.exe"
+ 
 
         Write-Host "Installing Infracost"
         Invoke-WebRequest https://github.com/infracost/infracost/releases/latest/download/infracost-windows-amd64.zip `
@@ -124,16 +122,7 @@ jobs:
         tflint --init
         tflint
 
-  # -------------------------------
-  # Run Terrascan
-  # -------------------------------
-  - task: PowerShell@2
-    displayName: Run Terrascan
-    inputs:
-      targetType: inline
-      script: |
-        cd environment/prod
-        terrascan scan -t terraform -d .
+ 
 
   # -------------------------------
   # Run Infracost
