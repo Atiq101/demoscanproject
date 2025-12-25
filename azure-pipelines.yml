@@ -15,10 +15,10 @@ jobs:
       provider: 'azurerm'
       command: 'init'
       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      backendServiceArm: 'connection-03'
-      backendAzureRmStorageAccountName: 'dec25strorageacct'
-      backendAzureRmContainerName: 'dec25container'
-      backendAzureRmKey: 'terra.tfstate'
+      backendServiceArm: 'conn-main'
+      backendAzureRmStorageAccountName: 'storagezia123'
+      backendAzureRmContainerName: 'container-zia-123'
+      backendAzureRmKey: 'terraform.tfstate'
 
   - task: TerraformTask@5
     displayName: Terraform validate
@@ -33,7 +33,7 @@ jobs:
       provider: 'azurerm'
       command: 'plan'
       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      environmentServiceNameAzureRM: 'connection-03'
+      environmentServiceNameAzureRM: 'conn-main'
    
 
   
