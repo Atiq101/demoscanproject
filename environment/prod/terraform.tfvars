@@ -12,6 +12,19 @@ rg = {
 
     }
   }
+  rg2= {
+    name       = "rg-sandal-chap"
+    location   = "uk south"
+
+
+    managed_by = " managed by prod team"
+    tags = {
+      environment = "prod"
+      project     = "todo_app_pro"
+      owner       = "prod-team"
+
+    }
+  }
 }
 
 vnet = {
