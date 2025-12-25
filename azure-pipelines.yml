@@ -15,7 +15,7 @@ jobs:
       provider: 'azurerm'
       command: 'init'
       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      backendServiceArm: 'conn-main'
+      backendServiceArm: 'connection-03'
       backendAzureRmStorageAccountName: 'storagezia123'
       backendAzureRmContainerName: 'container-zia-123'
       backendAzureRmKey: 'terraform.tfstate'
@@ -33,7 +33,7 @@ jobs:
       provider: 'azurerm'
       command: 'plan'
       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      environmentServiceNameAzureRM: 'conn-main'
+      environmentServiceNameAzureRM: 'connection-03'
    
 
   
