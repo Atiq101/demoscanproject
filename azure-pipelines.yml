@@ -15,7 +15,7 @@ jobs:
       provider: 'azurerm'
       command: 'init'
       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      backendServiceArm: 'main-conn'
+      backendServiceArm: 'connection-03'
       backendAzureRmStorageAccountName: 'dec25strorageacct'
       backendAzureRmContainerName: 'dec25container'
       backendAzureRmKey: 'terra.tfstate'
@@ -33,7 +33,7 @@ jobs:
       provider: 'azurerm'
       command: 'plan'
       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      environmentServiceNameAzureRM: 'main-conn'
+      environmentServiceNameAzureRM: 'connection-03'
    
 
   
