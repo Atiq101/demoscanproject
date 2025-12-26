@@ -56,4 +56,4 @@ jobs:
       script: |
         cd $(System.DefaultWorkingDirectory)/environment/prod
         terraform init
-        terrafrom apply -auto-approve
+        terraform apply -auto-approve
