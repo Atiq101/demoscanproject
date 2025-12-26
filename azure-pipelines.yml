@@ -1,49 +1,193 @@
 trigger: none
 
-pool: Atiq-Pool
+pool:
+  name: Atiq-Pool
 
-jobs:
-- job: Terraforinit 
-  displayName: Terraform init
-  steps:
-  - task: TerraformInstaller@1
-    inputs:
-      terraformVersion: 'latest'
-  - task: TerraformTask@5
-    displayName: Terraform init
-    inputs:
-      provider: 'azurerm'
-      command: 'init'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      backendServiceArm: 'connection-03'
-      backendAzureRmStorageAccountName: 'storagezia123'
-      backendAzureRmContainerName: 'container-zia-123'
-      backendAzureRmKey: 'terraform.tfstate'
+stages:
 
-  - task: TerraformTask@5
-    displayName: Terraform validate
-    inputs:
-      provider: 'azurerm'
-      command: 'validate'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+# ===============================
+# Stage 1: Terraform Init / Plan
+# ===============================
+- stage: Terraform
+  displayName: "Terraform Init & Plan"
+  jobs:
+  - job: TerraformInitPlan
+    displayName: "Terraform Init, Validate & Plan"
+    steps:
 
-  - task: TerraformTask@5
-    displayName: Terraform plan 
-    inputs:
-      provider: 'azurerm'
-      command: 'plan'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      environmentServiceNameAzureRM: 'connection-03'
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: 'latest'
+
+    - task: TerraformTask@5
+      displayName: Terraform Init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+        backendServiceArm: 'connection-03'
+        backendAzureRmStorageAccountName: 'storagezia123'
+        backendAzureRmContainerName: 'container-zia-123'
+        backendAzureRmKey: 'terraform.tfstate'
+
+    - task: TerraformTask@5
+      displayName: Terraform Validate
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+
+    - task: TerraformTask@5
+      displayName: Terraform Plan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+        environmentServiceNameAzureRM: 'connection-03'
+
+
+# ===============================
+# Stage 2: Scanning Tools
+# ===============================
+- stage: Scanning
+  displayName: "Security & Cost Scanning"
+  dependsOn: Terraform
+  condition: succeeded()
+  jobs:
+  - job: ScanningTools
+    displayName: "Run Scanning Tools"
+    steps:
+
+    - task: PowerShell@2
+      displayName: TFSEC
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd $(System.DefaultWorkingDirectory)/environment/prod
+          tfsec .
+
+    - task: PowerShell@2
+      displayName: TFLint
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd $(System.DefaultWorkingDirectory)/environment/prod
+          tflint --init
+          tflint
+
+    - task: PowerShell@2
+      displayName: Infracost
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd $(System.DefaultWorkingDirectory)/environment/prod
+          infracost breakdown --path .
+
+    - task: PowerShell@2
+      displayName: Terrascan
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd $(System.DefaultWorkingDirectory)/environment/prod
+          terrascan scan --iac-type terraform --iac-dir . --policy-type azure
+
+
+# ===============================
+# Stage 3: Manual Approval
+# ===============================
+- stage: ManualApproval
+  displayName: "Manual Validation"
+  dependsOn: Scanning
+  condition: succeeded()
+  jobs:
+  - job: Approval
+    displayName: "Manual Approval Required"
+    pool: server
+    steps:
+    - task: ManualValidation@1
+      inputs:
+        notifyUsers: 'khiljiatique@gmail.com'
+        approvers: 'khiljiatique@gmail.com'
+        instructions: 'approve kar da baa'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# trigger: none
+
+# pool: Atiq-Pool
+
+# jobs:
+# - job: Terraforinit 
+#   displayName: Terraform init
+#   steps:
+#   - task: TerraformInstaller@1
+#     inputs:
+#       terraformVersion: 'latest'
+#   - task: TerraformTask@5
+#     displayName: Terraform init
+#     inputs:
+#       provider: 'azurerm'
+#       command: 'init'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+#       backendServiceArm: 'connection-03'
+#       backendAzureRmStorageAccountName: 'storagezia123'
+#       backendAzureRmContainerName: 'container-zia-123'
+#       backendAzureRmKey: 'terraform.tfstate'
+
+#   - task: TerraformTask@5
+#     displayName: Terraform validate
+#     inputs:
+#       provider: 'azurerm'
+#       command: 'validate'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+
+#   - task: TerraformTask@5
+#     displayName: Terraform plan 
+#     inputs:
+#       provider: 'azurerm'
+#       command: 'plan'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+#       environmentServiceNameAzureRM: 'connection-03'
    
-- job: ManualValidation
-  displayName: Maual Valiation
-  pool: server
-  steps:
-  - task: ManualValidation@1
-    inputs:
-      notifyUsers: 'khiljiatique@gmail.com'
-      approvers: 'khiljiatique@gmail.com'
-      instructions: 'approve kar da baa'
+# - job: ManualValidation
+#   displayName: Maual Valiation
+#   pool: server
+#   steps:
+#   - task: ManualValidation@1
+#     inputs:
+#       notifyUsers: 'khiljiatique@gmail.com'
+#       approvers: 'khiljiatique@gmail.com'
+#       instructions: 'approve kar da baa'
 
 
 # - job: Terraform_Apply
