@@ -94,13 +94,12 @@ stages:
               cd $(System.DefaultWorkingDirectory)/environment/prod
               infracost breakdown --path .
         
-  # -------------------------------
-        # - task: PowerShell@2
-        #   displayName: Run Infracost
-        #   env:
-        #     INFRACOST_API_KEY: $(INFRACOST_API_KEY)
-        #   inputs:
-        #     targetType: inline
-        #     script: |
-        #       cd environment/prod
-        #       infracost breakdown --path .
+  # Terrascan
+        - task: PowerShell@2
+          displayName: Terrascan       
+          inputs:
+            targetType: 'inline'
+            script: |
+                cd $(System.DefaultWorkingDirectory)/environment/prod
+                 terrascan scan -t terraform -d .
+                 
