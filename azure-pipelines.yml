@@ -51,6 +51,23 @@ jobs:
   dependsOn: ManualValidation
   pool: Atiq-Pool
   steps:
+
+  - task: TerraformInstaller@1
+    inputs:
+      terraformVersion: 'latest'
+
+  - task: TerraformTask@5
+    displayName: Terraform Init (Apply Job)
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+      backendServiceArm: 'connection-03'
+      backendAzureRmStorageAccountName: 'storagezia123'
+      backendAzureRmContainerName: 'container-zia-123'
+      backendAzureRmKey: 'terraform.tfstate'
+      commandOptions: '-reconfigure'
+
   - task: TerraformTask@5
     displayName: Terraform Apply
     inputs:
