@@ -46,14 +46,16 @@ jobs:
       instructions: 'approve kar da baa'
 
 
-- job: TerrafromApply
-  displayName: Terrafrom APPLY
+- job: Terraform_Apply
+  displayName: Terraform Apply
   dependsOn: ManualValidation
   pool: Atiq-Pool
   steps:
-  - task: CmdLine@2
+  - task: TerraformTask@5
+    displayName: Terraform Apply
     inputs:
-      script: |
-        cd $(System.DefaultWorkingDirectory)/environment/prod
-        terraform init
-        terraform apply -auto-approve
+      provider: 'azurerm'
+      command: 'apply'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+      environmentServiceNameAzureRM: 'connection-03'
+      commandOptions: '-auto-approve'
