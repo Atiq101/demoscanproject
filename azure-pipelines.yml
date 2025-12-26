@@ -46,65 +46,65 @@ jobs:
       instructions: 'approve kar da baa'
 
 
-- job: Terraform_Apply
-  displayName: Terraform Apply
-  dependsOn: ManualValidation
-  pool: Atiq-Pool
-  steps:
+# - job: Terraform_Apply
+#   displayName: Terraform Apply
+#   dependsOn: ManualValidation
+#   pool: Atiq-Pool
+#   steps:
 
-  - task: TerraformInstaller@1
-    inputs:
-      terraformVersion: 'latest'
+#   - task: TerraformInstaller@1
+#     inputs:
+#       terraformVersion: 'latest'
 
-  - task: TerraformTask@5
-    displayName: Terraform Init (Apply Job)
-    inputs:
-      provider: 'azurerm'
-      command: 'init'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      backendServiceArm: 'connection-03'
-      backendAzureRmStorageAccountName: 'storagezia123'
-      backendAzureRmContainerName: 'container-zia-123'
-      backendAzureRmKey: 'terraform.tfstate'
-      commandOptions: '-reconfigure'
+#   - task: TerraformTask@5
+#     displayName: Terraform Init (Apply Job)
+#     inputs:
+#       provider: 'azurerm'
+#       command: 'init'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+#       backendServiceArm: 'connection-03'
+#       backendAzureRmStorageAccountName: 'storagezia123'
+#       backendAzureRmContainerName: 'container-zia-123'
+#       backendAzureRmKey: 'terraform.tfstate'
+#       commandOptions: '-reconfigure'
 
-  - task: TerraformTask@5
-    displayName: Terraform Apply
-    inputs:
-      provider: 'azurerm'
-      command: 'apply'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      environmentServiceNameAzureRM: 'connection-03'
-      commandOptions: '-auto-approve'
+#   - task: TerraformTask@5
+#     displayName: Terraform Apply
+#     inputs:
+#       provider: 'azurerm'
+#       command: 'apply'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+#       environmentServiceNameAzureRM: 'connection-03'
+#       commandOptions: '-auto-approve'
 
-- job: Terraform_Destroy
-  displayName: Terraform Destroy
-  dependsOn: ManualValidation
-  pool: Atiq-Pool
-  condition: and(succeeded(), eq(variables['DESTROY'], 'true'))
-  steps:
+# - job: Terraform_Destroy
+#   displayName: Terraform Destroy
+#   dependsOn: ManualValidation
+#   pool: Atiq-Pool
+#   condition: and(succeeded(), eq(variables['DESTROY'], 'true'))
+#   steps:
 
-  - task: TerraformInstaller@1
-    inputs:
-      terraformVersion: 'latest'
+#   - task: TerraformInstaller@1
+#     inputs:
+#       terraformVersion: 'latest'
 
-  - task: TerraformTask@5
-    displayName: Terraform Init (Destroy)
-    inputs:
-      provider: 'azurerm'
-      command: 'init'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      backendServiceArm: 'connection-03'
-      backendAzureRmStorageAccountName: 'storagezia123'
-      backendAzureRmContainerName: 'container-zia-123'
-      backendAzureRmKey: 'terraform.tfstate'
-      commandOptions: '-reconfigure'
+#   - task: TerraformTask@5
+#     displayName: Terraform Init (Destroy)
+#     inputs:
+#       provider: 'azurerm'
+#       command: 'init'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+#       backendServiceArm: 'connection-03'
+#       backendAzureRmStorageAccountName: 'storagezia123'
+#       backendAzureRmContainerName: 'container-zia-123'
+#       backendAzureRmKey: 'terraform.tfstate'
+#       commandOptions: '-reconfigure'
 
-  - task: TerraformTask@5
-    displayName: Terraform Destroy
-    inputs:
-      provider: 'azurerm'
-      command: 'destroy'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      environmentServiceNameAzureRM: 'connection-03'
-      commandOptions: '-auto-approve'
+#   - task: TerraformTask@5
+#     displayName: Terraform Destroy
+#     inputs:
+#       provider: 'azurerm'
+#       command: 'destroy'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+#       environmentServiceNameAzureRM: 'connection-03'
+#       commandOptions: '-auto-approve'
