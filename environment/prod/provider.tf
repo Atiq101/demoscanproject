@@ -1,18 +1,22 @@
+
+
+
+
 terraform {
   required_version = ">= 1.6.0"
   required_providers {
-    azurerm = {
+   azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.37.0"
+     version = "4.37.0"
     }
   } 
 
 
    backend "azurerm" {
    
-   container_name = "dec25container"
-   storage_account_name = "dec25strorageacct"
-   key = "terra.tfstate"
+   container_name = "container-zia-123"
+   storage_account_name = "storagezia123"
+   key = "terraform.tfstate"
 
 }
 

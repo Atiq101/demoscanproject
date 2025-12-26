@@ -1,0 +1,39 @@
+trigger: none
+
+pool: Atiq-Pool
+
+jobs:
+- job: Terraforinit 
+  displayName: Terraform init
+  steps:
+  - task: TerraformInstaller@1
+    inputs:
+      terraformVersion: 'latest'
+  - task: TerraformTask@5
+    displayName: Terraform init
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+      backendServiceArm: 'connection-03'
+      backendAzureRmStorageAccountName: 'storagezia123'
+      backendAzureRmContainerName: 'container-zia-123'
+      backendAzureRmKey: 'terraform.tfstate'
+
+  - task: TerraformTask@5
+    displayName: Terraform validate
+    inputs:
+      provider: 'azurerm'
+      command: 'validate'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+
+  - task: TerraformTask@5
+    displayName: Terraform plan 
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+      environmentServiceNameAzureRM: 'connection-03'
+   
+
+  
