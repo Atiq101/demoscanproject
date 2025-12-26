@@ -90,7 +90,11 @@ stages:
         targetType: 'inline'
         script: |
           cd $(System.DefaultWorkingDirectory)/environment/prod
-          terrascan scan --iac-type terraform --iac-dir . --policy-type azure || exit 0
+          terrascan scan --iac-type terraform --iac-dir . --policy-type azure
+                if ($LASTEXITCODE -ne 0) {
+          Write-Host "Terrascan found issues, but pipeline will continue."
+                  exit 0
+                }
 
 
 # ===============================
