@@ -100,6 +100,7 @@ stages:
           inputs:
             targetType: 'inline'
             script: |
-                cd $(System.DefaultWorkingDirectory)/environment/prod
-                 terrascan scan -t terraform -d .
+              cd $(System.DefaultWorkingDirectory)/environment/prod
+              terrascan scan -t 
+              terraform -d .
                  
