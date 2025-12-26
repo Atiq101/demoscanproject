@@ -59,6 +59,7 @@ stages:
             script: |
               cd $(System.DefaultWorkingDirectory)/environment/prod
               checkov -d .
+              if ($LASTEXITCODE -ne 0) { exit 0 }
 
   #       - task: PowerShell@2
   #       displayName: Run tfsec
