@@ -2,137 +2,95 @@ trigger: none
 
 pool: Atiq-Pool
 
-jobs:
+# jobs:
 
-# -----------------------------------
-# JOB 1: Terraform Init / Validate / Plan
-# -----------------------------------
-- job: Terraform_Init_Plan
-  displayName: Terraform Init, Validate & Plan
-  steps:
-  - task: TerraformInstaller@1
-    inputs:
-      terraformVersion: 'latest'
+# # -----------------------------------
+# # JOB 1: Terraform Init / Validate / Plan
+# # -----------------------------------
+# - job: Terraform_Init_Plan
+#   displayName: Terraform Init, Validate & Plan
+#   steps:
+#   - task: TerraformInstaller@1
+#     inputs:
+#       terraformVersion: 'latest'
 
-  - task: TerraformTask@5
-    displayName: Terraform init
-    inputs:
-      provider: azurerm
-      command: init
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      backendServiceArm: 'connection-03'
-      backendAzureRmStorageAccountName: 'storagezia123'
-      backendAzureRmContainerName: 'container-zia-123'
-      backendAzureRmKey: 'terraform.tfstate'
+#   - task: TerraformTask@5
+#     displayName: Terraform init
+#     inputs:
+#       provider: azurerm
+#       command: init
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+#       backendServiceArm: 'connection-03'
+#       backendAzureRmStorageAccountName: 'storagezia123'
+#       backendAzureRmContainerName: 'container-zia-123'
+#       backendAzureRmKey: 'terraform.tfstate'
 
-  - task: TerraformTask@5
-    displayName: Terraform validate
-    inputs:
-      provider: azurerm
-      command: validate
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+#   - task: TerraformTask@5
+#     displayName: Terraform validate
+#     inputs:
+#       provider: azurerm
+#       command: validate
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
 
-  - task: TerraformTask@5
-    displayName: Terraform plan
-    inputs:
-      provider: azurerm
-      command: plan
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
-      environmentServiceNameAzureRM: 'connection-03'
+#   - task: TerraformTask@5
+#     displayName: Terraform plan
+#     inputs:
+#       provider: azurerm
+#       command: plan
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/environment/prod'
+#       environmentServiceNameAzureRM: 'connection-03'
 
 
 # -----------------------------------
 # JOB 2: Download, Install & Run Security Tools
 # -----------------------------------
-- job: Security_Scans
-  displayName: Download & Run Terraform Security Scans
-  dependsOn: Terraform_Init_Plan
-  steps:
-  - checkout: self
-
-  # -------------------------------
-  # Install Security Tools
-  # -------------------------------
-  - task: PowerShell@2
-    displayName: Download & Install Security Tools
-    inputs:
-      targetType: inline
-      script: |
-        $tools = "C:\Tools"
-        New-Item -ItemType Directory -Force -Path $tools
-        $env:PATH += ";$tools"
-
-        Write-Host "Installing Checkov"
-        pip install --upgrade checkov
-
-        Write-Host "Installing tfsec"
-        Invoke-WebRequest https://github.com/aquasecurity/tfsec/releases/latest/download/tfsec-windows-amd64.exe `
-          -OutFile "$tools\tfsec.exe"
-
-        Write-Host "Installing TFLint"
-        Invoke-WebRequest https://github.com/terraform-linters/tflint/releases/latest/download/tflint_windows_amd64.zip `
-          -OutFile tflint.zip
-        Expand-Archive tflint.zip -DestinationPath $tools -Force
-
- 
-
-        Write-Host "Installing Infracost"
-        Invoke-WebRequest https://github.com/infracost/infracost/releases/latest/download/infracost-windows-amd64.zip `
-          -OutFile infracost.zip
-        Expand-Archive infracost.zip -DestinationPath $tools -Force
-
-        Write-Host "Verifying tools"
-        checkov --version
-        tfsec --version
-        tflint --version
-        terrascan version
-        infracost --version
 
   # -------------------------------
   # Run Checkov
-  # -------------------------------
-  - task: PowerShell@2
-    displayName: Run Checkov
-    inputs:
-      targetType: inline
-      script: |
-        cd environment/prod
-        checkov -d .
 
-  # -------------------------------
-  # Run tfsec
-  # -------------------------------
-  - task: PowerShell@2
-    displayName: Run tfsec
-    inputs:
-      targetType: inline
-      script: |
-        cd environment/prod
-        tfsec .
+stages: 
+  - stage:
+    displayName: "Scanning Tools"
+    jobs:
+      - job: checkhov
+        steps:
+        - task: CmdLine@2
+          inputs:
+            script: |
+              cd $(System.DefaultWorkingDirectory)/environment/prod
+              checkov -d .
 
-  # -------------------------------
-  # Run TFLint
-  # -------------------------------
-  - task: PowerShell@2
-    displayName: Run TFLint
-    inputs:
-      targetType: inline
-      script: |
-        cd environment/prod
-        tflint --init
-        tflint
+  #       - task: PowerShell@2
+  #       displayName: Run tfsec
+  #       inputs:
+  #       targetType: inline
+  #       script: |
+  #       cd environment/prod
+  #         tfsec .
+
+  # # -------------------------------
+  # # Run TFLint
+  # # -------------------------------
+  # - task: PowerShell@2
+  #   displayName: Run TFLint
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       cd environment/prod
+  #       tflint --init
+  #       tflint
 
  
 
-  # -------------------------------
-  # Run Infracost
-  # -------------------------------
-  - task: PowerShell@2
-    displayName: Run Infracost
-    env:
-      INFRACOST_API_KEY: $(INFRACOST_API_KEY)
-    inputs:
-      targetType: inline
-      script: |
-        cd environment/prod
-        infracost breakdown --path .
+  # # -------------------------------
+  # # Run Infracost
+  # # -------------------------------
+  # - task: PowerShell@2
+  #   displayName: Run Infracost
+  #   env:
+  #     INFRACOST_API_KEY: $(INFRACOST_API_KEY)
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       cd environment/prod
+  #       infracost breakdown --path .
