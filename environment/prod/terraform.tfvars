@@ -13,7 +13,7 @@ rg = {
     }
   }
   rg2= {
-    name       = "rg-sandal-chap123"
+    name       = "rg-sandal-chap12345"
     location   = "uk south"
 
 
