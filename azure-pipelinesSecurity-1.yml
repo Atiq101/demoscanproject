@@ -95,12 +95,11 @@ stages:
               infracost breakdown --path .
         
   # Terrascan
+      
         - task: PowerShell@2
-          displayName: Terrascan       
+          displayName: Terrascan 
           inputs:
             targetType: 'inline'
             script: |
-              cd $(System.DefaultWorkingDirectory)/environment/prod
-              terrascan scan -t 
-              terraform -d .
-                 
+                cd $(System.DefaultWorkingDirectory)/environment/prod
+                terrascan scan --iac-type terraform --iac-dir . --policy-type azure
