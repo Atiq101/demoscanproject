@@ -44,12 +44,16 @@ jobs:
       notifyUsers: 'khiljiatique@gmail.com'
       approvers: 'khiljiatique@gmail.com'
       instructions: 'approve kar da baa'
+
+
 - job: TerrafromApply
   displayName: Terrafrom APPLY
+  dependsOn: ManualValidation
+  pool: Atiq-Pool
   steps:
-  - task: TerraformTask@5
+  - task: CmdLine@2
     inputs:
-      provider: 'azurerm'
-      command: 'apply'
-      commandOptions: '-auto-approve'
-      environmentServiceNameAzureRM: 'connection-03'
+      script: |
+        cd $(System.DefaultWorkingDirectory)/environment/prod
+        terraform init
+        terrafrom apply -auto-approve
