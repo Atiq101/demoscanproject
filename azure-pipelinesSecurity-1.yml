@@ -74,24 +74,33 @@ stages:
   # Run TFLint
   # -------------------------------
         - task: PowerShell@2
+          displayName: tflint
           inputs:
             targetType: 'inline'
             script: |
-              d $(System.DefaultWorkingDirectory)/environment/prod
+              cd $(System.DefaultWorkingDirectory)/environment/prod
               tflint --init
                tflint
         
          
 
-  # # -------------------------------
-  # # Run Infracost
-  # # -------------------------------
-  # - task: PowerShell@2
-  #   displayName: Run Infracost
-  #   env:
-  #     INFRACOST_API_KEY: $(INFRACOST_API_KEY)
-  #   inputs:
-  #     targetType: inline
-  #     script: |
-  #       cd environment/prod
-  #       infracost breakdown --path .
+  # -------------------------------
+  # Run Infracost
+        - task: PowerShell@2
+          displayName: Infracost
+          inputs:
+            targetType: 'inline'
+            script: |
+              cd $(System.DefaultWorkingDirectory)/environment/prod
+              infracost breakdown --path .
+        
+  # -------------------------------
+        # - task: PowerShell@2
+        #   displayName: Run Infracost
+        #   env:
+        #     INFRACOST_API_KEY: $(INFRACOST_API_KEY)
+        #   inputs:
+        #     targetType: inline
+        #     script: |
+        #       cd environment/prod
+        #       infracost breakdown --path .
